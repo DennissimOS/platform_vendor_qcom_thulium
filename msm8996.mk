@@ -320,4 +320,5 @@ endif
 ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.4)
 # Enable vndk-sp Libraries
 PRODUCT_PACKAGES += vndk_package
+PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE:=true
 endif
