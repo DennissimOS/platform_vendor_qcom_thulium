@@ -161,7 +161,10 @@ endif
 TARGET_CRYPTFS_HW_PATH := device/qcom/common/cryptfs_hw
 
 BOARD_QTI_CAMERA_32BIT_ONLY := true
+
+ifeq ($(BOARD_AVB_ENABLE), false)
 TARGET_BOOTIMG_SIGNED := true
+endif
 
 DEX_PREOPT_DEFAULT := nostripping
 
