@@ -21,12 +21,11 @@ ENABLE_AB ?= false
 # Disable QTIC until it's brought up in split system/vendor
 # configuration to avoid compilation breakage.
 ifeq ($(ENABLE_VENDOR_IMAGE), true)
-#TARGET_USES_QTIC := false
+TARGET_USES_QTIC := false
 endif
 
 TARGET_USES_NQ_NFC := false # bring-up hack
 BOARD_FRP_PARTITION_NAME :=frp
-
 
 ifneq ($(wildcard kernel/msm-3.18),)
     TARGET_KERNEL_VERSION := 3.18
@@ -159,8 +158,7 @@ PRODUCT_PACKAGES += \
     android.hardware.memtrack@1.0-service \
     android.hardware.light@2.0-impl \
     android.hardware.light@2.0-service \
-    android.hardware.configstore@1.0-service \
-    android.hardware.broadcastradio@1.0-impl
+    android.hardware.configstore@1.0-service
 
 PRODUCT_PACKAGES += \
     vendor.display.color@1.0-service \
