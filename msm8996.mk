@@ -37,6 +37,17 @@ else
     $(warning "Unknown kernel")
 endif
 
+ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.4)
+# Enable AVB 2.0
+BOARD_AVB_ENABLE := true
+
+# Enable chain partition for system, to facilitate system-only OTA in Treble.
+BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
+endif
+
 #QTIC flag
 -include $(QCPATH)/common/config/qtic-config.mk
 
@@ -200,10 +211,8 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.hifi_sensors.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.hifi_sensors.xml
 
 # dm-verity configuration
-PRODUCT_SUPPORTS_VERITY := true
-PRODUCT_SYSTEM_VERITY_PARTITION := /dev/block/bootdevice/by-name/system
-ifeq ($(ENABLE_VENDOR_IMAGE), true)
-PRODUCT_VENDOR_VERITY_PARTITION := /dev/block/bootdevice/by-name/vendor
+ifneq ($(BOARD_AVB_ENABLE), true)
+    PRODUCT_SUPPORTS_VERITY := true
 endif
 
 #FEATURE_OPENGLES_EXTENSION_PACK support string config file
@@ -264,6 +273,11 @@ ifeq ($(ENABLE_VENDOR_IMAGE), true)
 KMGK_USE_QTI_SERVICE := true
 endif
 
+ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.4)
+#Enable KEYMASTER 4.0
+ENABLE_KM_4_0 := true
+endif
+
 #Enable AOSP KEYMASTER and GATEKEEPER HIDLs
 ifneq ($(KMGK_USE_QTI_SERVICE), true)
 PRODUCT_PACKAGES += android.hardware.gatekeeper@1.0-impl \
@@ -277,6 +291,7 @@ PRODUCT_LOCALES += th_TH vi_VN tl_PH hi_IN ar_EG ru_RU tr_TR pt_BR bn_IN mr_IN t
         in_ID my_MM km_KH sw_KE uk_UA pl_PL sr_RS sl_SI fa_IR kn_IN ml_IN ur_IN gu_IN or_IN
 
 PRODUCT_PROPERTY_OVERRIDES += rild.libpath=/system/vendor/lib64/libril-qc-qmi-1.so
+PRODUCT_PROPERTY_OVERRIDES += vendor.rild.libpath=/system/vendor/lib64/libril-qc-qmi-1.so
 
 ifeq ($(ENABLE_AB),true)
 #A/B related packages
@@ -327,4 +342,10 @@ PRODUCT_PACKAGES += vndk_package
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE:=true
 TARGET_USES_MKE2FS := true
 $(call inherit-product, build/make/target/product/product_launched_with_p.mk)
+endif
+
+ifeq ($(ENABLE_KM_4_0), true)
+    DEVICE_MANIFEST_FILE += device/qcom/msm8996/keymaster.xml
+else
+    DEVICE_MANIFEST_FILE += device/qcom/msm8996/keymaster_ota.xml
 endif
