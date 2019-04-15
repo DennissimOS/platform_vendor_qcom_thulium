@@ -173,12 +173,7 @@ TARGET_INIT_VENDOR_LIB := libinit_msm
 #Enable Peripheral Manager
 TARGET_PER_MGR_ENABLED := true
 
-ifeq ($(TARGET_KERNEL_VERSION),4.4)
-    TARGET_HW_DISK_ENCRYPTION := false
-else
-    TARGET_HW_DISK_ENCRYPTION := true
-endif
-
+TARGET_HW_DISK_ENCRYPTION := true
 TARGET_CRYPTFS_HW_PATH := device/qcom/common/cryptfs_hw
 
 BOARD_QTI_CAMERA_32BIT_ONLY := true
